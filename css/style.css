@@ -7,7 +7,7 @@ body {
 canvas {
     height: 100%;
     width: 100%;
-    -webkit-box-shadow: inset 0px 0px 0px 5px green;
+    /* -webkit-box-shadow: inset 0px 0px 0px 5px green;
     -moz-box-shadow: inset 0px 0px 0px 5px green;
-    box-shadow: inset 0px 0px 0px 5px green;
+    box-shadow: inset 0px 0px 0px 5px green; */
 }
