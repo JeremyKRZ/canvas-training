@@ -29,37 +29,74 @@ var c = canvas.getContext('2d');
 //     c.stroke()
 // }
 
-var radius = 30
-var canvas_border = 5
-var limit = radius + canvas_border
+function Circle(x, y, dx, dy, radius) {
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+    this.dy = dy;
+    this.radius = radius;
+    this.color = (Math.random() < 0.5 ? 'blue' : 'red');
 
-var x = Math.random() * ((innerWidth - limit) -limit) + limit
-var y = Math.random() * ((innerHeight - limit) - limit) + limit;
-vitesse = 5;
-var dx = (Math.random() < 0.5 ? -1 : 1) * vitesse;
-var dy = (Math.random() < 0.5 ? -1 : 1) * vitesse;
+    if (x < innerWidth / 2) {
+        this.color = 'blue';
+    }
+    else {
+        this.color = 'red';
+    }
+
+    this.draw = function () {
+        c.beginPath();
+        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        c.fillStyle = this.color;
+        c.stroke();
+        c.fill();
+    }
+
+    this.update = function () {
+        if (this.x + this.radius > innerWidth || this.x - this.radius < 0) {
+            this.dx = -this.dx;
+        }
+
+        if (this.y + this.radius > innerHeight || this.y - this.radius < 0) {
+            this.dy = -this.dy;
+        }
+        this.x += this.dx;
+        this.y += this.dy;
+
+        this.draw();
+    }
+}
+
+var nb_circle = 100;
+var min_speed = 1;
+var max_speed = 4;
+
+var circleArray = [];
+for (var i = 0; i < nb_circle; i++) {
+
+    var radius = 30;
+    var x = Math.random() * ((innerWidth - radius) - radius) + radius;
+    var y = Math.random() * ((innerHeight - radius) - radius) + radius;
+    var vx = Math.floor(Math.random() * (max_speed - min_speed + 1)) + min_speed;
+    var vy = Math.floor(Math.random() * (max_speed - min_speed + 1)) + min_speed;
+    var dx = (Math.random() < 0.5 ? -1 : 1) * vx;
+    var dy = (Math.random() < 0.5 ? -1 : 1) * vy;
+
+    circleArray.push(new Circle(x, y, dx, dy, radius))
+}
+
+// MAIN
+console.log(circleArray);
+animate();
+
 
 function animate() {
     requestAnimationFrame(animate);
-    c.clearRect(0,0,innerWidth,innerHeight)
-    c.beginPath()
-    c.arc(x, y, radius, 0, Math.PI * 2, false)
-    c.strokeStyle = "blue"
-    c.stroke()
-
-    if (x + limit > innerWidth || x - limit < 0){
-        dx = -dx;
+    c.clearRect(0, 0, innerWidth, innerHeight);
+    for (var i = 0; i < circleArray.length; i++) {
+        circleArray[i].update();
     }
-
-    if (y + limit > innerHeight || y - limit < 0){
-        dy = -dy;
-    }
-    x+=dx
-    y+=dy
 }
-
-animate()
-
 
 window.addEventListener('resize', function () {
     canvas.width = window.innerWidth;
