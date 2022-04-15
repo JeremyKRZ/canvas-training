@@ -1,11 +1,13 @@
-body{
+body {
     overflow: hidden;
     margin: 0;
 }
 
 
-canvas{
-    border: 3px solid black;
+canvas {
     height: 100%;
     width: 100%;
+    -webkit-box-shadow: inset 0px 0px 0px 5px #f00;
+    -moz-box-shadow: inset 0px 0px 0px 5px #f00;
+    box-shadow: inset 0px 0px 0px 5px #f00;
 }
