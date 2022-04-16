@@ -115,10 +115,6 @@ document.querySelector('.apply').addEventListener('click', function(){
     minRadius = (isNaN(userMin) ? defaultMinRadius : userMin);
     maxRadius = (isNaN(userMax) ? defaultMaxRadius : userMax);
 
-    console.log(nbBalls)
-    console.log(minRadius)
-    console.log(maxRadius)
-
     init();
 })
 
