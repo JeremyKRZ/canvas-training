@@ -14,8 +14,8 @@ var effectSpeed = 3;
 var maxBaseRadius = 5;
 var minBaseRadius = 1;
 var nb_circle = 2000;
-var minSpeed = 5;
-var maxSpeed = 5;
+var minSpeed = 3;
+var maxSpeed = 3;
 
 var colors = [
     '#8ecae6',
