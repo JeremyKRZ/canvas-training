@@ -13,7 +13,7 @@ var effectRange = 50;
 var effectSpeed = 3;
 var maxBaseRadius = 5;
 var minBaseRadius = 1;
-var nb_circle = 3000;
+var nb_circle = 2000;
 var minSpeed = 5;
 var maxSpeed = 5;
 
