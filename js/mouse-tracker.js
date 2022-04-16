@@ -14,10 +14,10 @@ var effectSpeed = 3;
 var maxBaseRadius = 5;
 var minBaseRadius = 1;
 var nb_circle = 3000;
-var min_speed = 1;
-var max_speed = 1;
+var minSpeed = 1;
+var maxSpeed = 1;
 
-var colorArray = [
+var colors = [
     '#8ecae6',
     '#219ebc',
     '#023047',
@@ -29,11 +29,11 @@ var circleArray = [];
 
 for (var i = 0; i < nb_circle; i++) {
 
-    var radius = Math.floor(Math.random() * (maxBaseRadius - this.minBaseRadius + 1)) + minBaseRadius;
-    var x = Math.random() * ((innerWidth - radius) - radius) + radius;
-    var y = Math.random() * ((innerHeight - radius) - radius) + radius;
-    var vx = Math.floor(Math.random() * (max_speed - min_speed + 1)) + min_speed;
-    var vy = Math.floor(Math.random() * (max_speed - min_speed + 1)) + min_speed;
+    var radius = randomIntFromRange(minBaseRadius, maxBaseRadius);
+    var x = randomIntFromRange(radius, innerWidth-radius);
+    var y = randomIntFromRange(radius, innerHeight-radius);
+    var vx = randomIntFromRange(minSpeed, maxSpeed);
+    var vy = randomIntFromRange(minSpeed, maxSpeed);
     var dx = (Math.random() < 0.5 ? -1 : 1) * vx;
     var dy = (Math.random() < 0.5 ? -1 : 1) * vy;
 
@@ -52,7 +52,7 @@ function Circle(x, y, dx, dy, radius) {
     this.dy = dy;
     this.radius = radius;
     this.minRadius = radius;
-    this.color = colorArray[Math.floor(Math.random() * colorArray.length)]
+    this.color = randomColor(colors)
 
     this.draw = function () {
         c.beginPath();
@@ -93,6 +93,13 @@ function animate() {
     for (var i = 0; i < circleArray.length; i++) {
         circleArray[i].update();
     }
+}
+
+function randomIntFromRange(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+function randomColor(colors){
+    return colors[Math.floor(Math.random() * colors.length)];
 }
 
 window.addEventListener('resize', function () {
