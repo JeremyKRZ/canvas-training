@@ -12,6 +12,7 @@ var mouse = {
 var colors = ['#8ecae6', '#219ebc', '#023047', '#ffb703', '#fb8500']
 
 var gravity = 1;
+var defaultGravity = gravity;
 var friction = 0.9;
 var nbBalls = 50;
 var defaultNbBalls = nbBalls;
@@ -40,8 +41,8 @@ function Ball(x, y, dx, dy, radius, color) {
     this.x = x;
     this.y = y;
     this.dy = dy;
-    this.dx = dx,
-        this.radius = radius;
+    this.dx = dx;
+    this.radius = radius;
     this.color = color;
 
     this.draw = function () {
@@ -60,7 +61,7 @@ function Ball(x, y, dx, dy, radius, color) {
             this.dy += gravity;
         }
         if (this.x + this.radius + this.dx > canvas.width || this.x - this.radius + this.dx < 0) {
-            this.dx = -this.dx;
+            this.dx = -this.dx * (friction/2);
         }
         this.x += this.dx;
         this.y += this.dy;
@@ -106,14 +107,17 @@ document.querySelector('.options-button').addEventListener('click', function () 
         options.classList.add('show')
     }
 })
-document.querySelector('.apply').addEventListener('click', function(){
+document.querySelector('.apply').addEventListener('click', function () {
     userBalls = parseInt(document.getElementById("nb-billes").value)
     userMin = parseInt(document.getElementById("min-size").value)
     userMax = parseInt(document.getElementById("max-size").value)
+    userGravity = parseFloat(document.getElementById("gravity").value)
 
     nbBalls = (isNaN(userBalls) ? defaultNbBalls : userBalls);
     minRadius = (isNaN(userMin) ? defaultMinRadius : userMin);
     maxRadius = (isNaN(userMax) ? defaultMaxRadius : userMax);
+    gravity = (isNaN(userGravity) ? defaultGravity : userGravity);
+
 
     init();
 })
@@ -122,4 +126,15 @@ document.querySelector('.apply').addEventListener('click', function(){
 /**********************************  Main ****************************************/
 init();
 animate();
+
+
+
+
+//Add gravity Force
+//Add Mass to balls
+//Add collision coeff with ground
+//Add real velocity and direction
+//Add friction on ground
+//Bonus : Add air resistance
+//Bonus : Add collision between balls
 
