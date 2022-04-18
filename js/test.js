@@ -33,12 +33,12 @@ window.addEventListener('keydown', function (e) {
     }
 })
 
-function Particle(x, y, radius, color) {
+function Particle(x, y, dx, dy, radius, color) {
     this.x = x;
     this.y = y;
     this.velocity = {
-        x: randomIntFromRange(-3, 3),
-        y: randomIntFromRange(-3, 3)
+        x: dx,
+        y: dy
     }
     this.radius = radius;
     this.color = color;
@@ -52,10 +52,10 @@ function Particle(x, y, radius, color) {
         c.save()
         c.globalAlpha = this.opacity;
         c.fillStyle = this.color;
-        c.fill(); 
+        c.fill();
         c.restore();
-        c.strokeStyle =this.color;
-        c.stroke(); 
+        c.strokeStyle = this.color;
+        c.stroke();
         c.closePath();
     }
 
@@ -93,25 +93,9 @@ function Particle(x, y, radius, color) {
 let particles;
 function init() {
     particles = []
-    for (let i = 0; i < nbParticles; i++) {
-        var radius = randomIntFromRange(2, 100);
-        var x = randomIntFromRange(radius, canvas.width - radius);
-        var y = randomIntFromRange(radius, canvas.height - radius);
-        var color = randomColor(colors);
-
-        if (i !== 0) {
-            for (let j = 0; j < particles.length; j++) {
-                if (distance(x, y, particles[j].x, particles[j].y) - (radius + particles[j].radius) < 0) {
-                    x = randomIntFromRange(radius, canvas.width - radius)
-                    y = randomIntFromRange(radius, canvas.height - radius)
-
-                    j = -1
-                }
-            }
-        }
-
-        particles.push(new Particle(x, y, radius, color));
-    }
+    var color = randomColor(colors);
+    particles.push(new Particle(canvas.width / 2, canvas.height / 2, 0, 0, 10, 'blue'));
+    particles.push(new Particle(105, canvas.height / 2, 2, 0, 100, 'orange'))
 }
 
 function animate() {
@@ -122,7 +106,7 @@ function animate() {
     })
 }
 
-function rotate(velocity, angle){
+function rotate(velocity, angle) {
     const rotatedVelocities = {
         x: velocity.x * Math.cos(angle) - velocity.y * Math.sin(angle),
         y: velocity.x * Math.sin(angle) + velocity.y * Math.cos(angle)

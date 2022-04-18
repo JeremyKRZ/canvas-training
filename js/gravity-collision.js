@@ -11,11 +11,15 @@ var mouse = {
 
 var colors = ['#8ecae6', '#219ebc', '#023047', '#ffb703', '#fb8500']
 
-let nbParticles = 10;
-let minOpacity = 0.1;
-let maxOpacity = 0.6;
-let mouseRadius = 250;
-let opacityStep = 0.02;
+var gravity = 1;
+var defaultGravity = gravity;
+var friction = 0.9;
+var nbBalls = 50;
+var defaultNbBalls = nbBalls;
+var minRadius = 20;
+var defaultMinRadius = minRadius;
+var maxRadius = 40;
+var defaultMaxRadius = maxRadius;
 
 window.addEventListener('resize', function () {
     canvas.width = window.innerWidth;
@@ -33,7 +37,7 @@ window.addEventListener('keydown', function (e) {
     }
 })
 
-function Particle(x, y, radius, color) {
+function Ball(x, y, radius, color) {
     this.x = x;
     this.y = y;
     this.velocity = {
@@ -42,24 +46,18 @@ function Particle(x, y, radius, color) {
     }
     this.radius = radius;
     this.color = color;
-    this.mass = radius * 2;
-    //this.opacity = minOpacity;
-    this.opacity = maxOpacity;
+    this.mass = 1;
 
     this.draw = function () {
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-        c.save()
-        c.globalAlpha = this.opacity;
         c.fillStyle = this.color;
-        c.fill(); 
-        c.restore();
-        c.strokeStyle =this.color;
-        c.stroke(); 
+        c.fill();
+        c.stroke();
         c.closePath();
     }
 
-    this.update = particles => {
+    this.update = function () {
 
         for (let i = 0; i < particles.length; i++) {
             if (this === particles[i]) continue;
@@ -68,60 +66,59 @@ function Particle(x, y, radius, color) {
             }
         }
 
-        if (this.y + this.radius + this.velocity.y > canvas.height || this.y - this.radius + this.velocity.y < 0) {
-            this.velocity.y = -this.velocity.y;
+        if (this.y + this.radius + this.velocity.y > canvas.height) {
+            this.velocity.y = -this.velocity.y * friction;
+        } else {
+            this.velocity.y += gravity;
         }
         if (this.x + this.radius + this.velocity.x > canvas.width || this.x - this.radius + this.velocity.x < 0) {
-            this.velocity.x = -this.velocity.x;
+            this.velocity.x = -this.velocity.x * (friction/2);
         }
-        this.draw();
-
-        //mouse collision
-        /*if(distance(mouse.x, mouse.y, this.x, this.y) < mouseRadius && this.opacity < maxOpacity){
-            this.opacity += opacityStep;
-        }else if (this.opacity > minOpacity){
-            this.opacity -= opacityStep
-
-            this.opacity = Math.max(minOpacity, this.opacity);
-        }*/
-
         this.x += this.velocity.x;
         this.y += this.velocity.y;
+        this.draw();
     }
 }
 
-let particles;
+var particles;
+
 function init() {
-    particles = []
-    for (let i = 0; i < nbParticles; i++) {
-        var radius = randomIntFromRange(2, 100);
-        var x = randomIntFromRange(radius, canvas.width - radius);
-        var y = randomIntFromRange(radius, canvas.height - radius);
-        var color = randomColor(colors);
+    particles = [];
+    for (var i = 0; i < nbBalls; i++) {
+        var radius = randomIntFromRange(minRadius, maxRadius);
+        var x = randomIntFromRange(radius, canvas.width - radius)
+        var y = randomIntFromRange(radius, canvas.height / 2)
+        var color = randomColor(colors)
 
         if (i !== 0) {
             for (let j = 0; j < particles.length; j++) {
                 if (distance(x, y, particles[j].x, particles[j].y) - (radius + particles[j].radius) < 0) {
                     x = randomIntFromRange(radius, canvas.width - radius)
-                    y = randomIntFromRange(radius, canvas.height - radius)
+                    y = randomIntFromRange(radius, canvas.height / 2)
 
                     j = -1
                 }
             }
         }
 
-        particles.push(new Particle(x, y, radius, color));
+        particles.push(new Ball(x, y, radius, color));
     }
 }
 
 function animate() {
     requestAnimationFrame(animate);
     c.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(particle => {
-        particle.update(particles);
-    })
+    for (var i = 0; i < particles.length; i++) {
+        particles[i].update();
+    }
 }
 
+function randomIntFromRange(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+function randomColor(colors) {
+    return colors[Math.floor(Math.random() * colors.length)];
+}
 function rotate(velocity, angle){
     const rotatedVelocities = {
         x: velocity.x * Math.cos(angle) - velocity.y * Math.sin(angle),
@@ -130,7 +127,6 @@ function rotate(velocity, angle){
 
     return rotatedVelocities;
 }
-
 function resolveCollision(particle, otherParticle) {
     const xVelocityDiff = particle.velocity.x - otherParticle.velocity.x;
     const yVelocityDiff = particle.velocity.y - otherParticle.velocity.y;
@@ -154,7 +150,7 @@ function resolveCollision(particle, otherParticle) {
 
         // Velocity after 1d collision equation
         const v1 = { x: u1.x * (m1 - m2) / (m1 + m2) + u2.x * 2 * m2 / (m1 + m2), y: u1.y };
-        const v2 = { x: u2.x * (m2 - m1) / (m1 + m2) + u1.x * 2 * m1 / (m1 + m2), y: u2.y };
+        const v2 = { x: u2.x * (m1 - m2) / (m1 + m2) + u1.x * 2 * m2 / (m1 + m2), y: u2.y };
 
         // Final velocity after rotating axis back to original location
         const vFinal1 = rotate(v1, -angle);
@@ -168,18 +164,12 @@ function resolveCollision(particle, otherParticle) {
         otherParticle.velocity.y = vFinal2.y;
     }
 }
-
-function randomIntFromRange(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-function randomColor(colors) {
-    return colors[Math.floor(Math.random() * colors.length)];
-}
 function distance(x1, y1, x2, y2) {
     let xDistance = x2 - x1;
     let yDistance = y2 - y1;
     return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 }
+
 
 /**********************************  Main ****************************************/
 init();
@@ -195,3 +185,4 @@ animate();
 //Add friction on ground
 //Bonus : Add air resistance
 //Bonus : Add collision between balls
+
